@@ -53,7 +53,7 @@ class BlockNewProducts extends Module
     {
         $this->name = 'blocknewproducts';
         $this->tab = 'front_office_features';
-        $this->version = '2.1.0';
+        $this->version = '2.1.1';
         $this->author = 'thirty bees';
         $this->need_instance = 0;
 
@@ -294,6 +294,7 @@ class BlockNewProducts extends Module
 
     /**
      * @return void
+     * @throws PrestaShopException
      */
     public function clearCache()
     {
@@ -306,6 +307,8 @@ class BlockNewProducts extends Module
         foreach ($caches as $template => $cacheId) {
             Tools::clearCache(Context::getContext()->smarty, $template, $cacheId);
         }
+
+        Configuration::updateValue(static::CACHE_TIMESTAMP, time());
     }
 
     /**
