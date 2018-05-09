@@ -1,1 +1,7 @@
-*blocknewproducts*.zip
+
+/translations/*
+!/translations/index.php
+
+/config*.xml
+
+blocknewproducts-*.zip
