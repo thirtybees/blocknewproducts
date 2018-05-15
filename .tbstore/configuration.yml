@@ -9,6 +9,7 @@ tags:
   - advertising
 description_short: The block new products allows you to display new products to your customers.
 description: description.md
+gdpr_compliant: true
 images:
   - image-1.png
 license: AFL
