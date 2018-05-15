@@ -60,7 +60,7 @@ class BlockNewProducts extends Module
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->l('New products block');
+        $this->displayName = $this->l('Block New Products');
         $this->description = $this->l('Displays a block featuring your store\'s newest products.');
 
         if (Configuration::get(static::CACHE_TIMESTAMP) < (time() - Configuration::get(static::CACHE_TTL))) {
