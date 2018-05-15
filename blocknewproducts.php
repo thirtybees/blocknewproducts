@@ -305,7 +305,7 @@ class BlockNewProducts extends Module
         ];
 
         foreach ($caches as $template => $cacheId) {
-            Tools::clearCache(Context::getContext()->smarty, $template, $cacheId);
+            Tools::clearCache(Context::getContext()->smarty, $this->getTemplatePath($template), $cacheId);
         }
 
         Configuration::updateValue(static::CACHE_TIMESTAMP, time());
