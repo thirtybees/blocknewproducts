@@ -62,6 +62,7 @@ class BlockNewProducts extends Module
 
         $this->displayName = $this->l('Block New Products');
         $this->description = $this->l('Displays a block featuring your store\'s newest products.');
+        $this->tb_versions_compliancy = '> 1.0.0';
 
         if (Configuration::get(static::CACHE_TIMESTAMP) < (time() - Configuration::get(static::CACHE_TTL))) {
             $this->clearCache();
