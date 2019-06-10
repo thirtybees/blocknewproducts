@@ -86,7 +86,7 @@ class BlockNewProducts extends Module
         $this->registerHook('addproduct');
         $this->registerHook('updateproduct');
         $this->registerHook('deleteproduct');
-        Configuration::updateValue('NEW_PRODUCTS_NBR', 5);
+        Configuration::updateValue('NEW_PRODUCTS_NBR', 8);
         $this->registerHook('displayHomeTab');
         $this->registerHook('displayHomeTabContent');
 
