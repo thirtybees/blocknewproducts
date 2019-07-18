@@ -22,7 +22,7 @@
  * PrestaShop is an internationally registered trademark of PrestaShop SA.
  *}
 
- <!-- MODULE Block best sellers -->
+<!-- MODULE Block New Products -->
 <div class="tm-home col-xs-12">
 {if isset($new_products) && $new_products}
 	<div class="tm-hp text-center">
@@ -36,4 +36,4 @@
 </ul>
 {/if}
 </div>
-<!-- /MODULE Block best sellers -->
+<!-- /MODULE Block New Products -->
