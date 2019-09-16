@@ -126,11 +126,11 @@ class BlockNewProducts extends Module
     {
         $output = '';
         if (Tools::isSubmit('submitBlockNewProducts')) {
-            if (!($productNbr = Tools::getValue(static::NUMBER)) || empty($productNbr))
+            if (!($productNbr = Tools::getValue(static::NUMBER)) || empty($productNbr)) {
                 $output .= $this->displayError($this->l('Please complete the "products to display" field.'));
-            elseif ((int) ($productNbr) == 0)
+            } elseif ((int) ($productNbr) == 0) {
                 $output .= $this->displayError($this->l('Invalid number.'));
-            else {
+            } else {
                 Configuration::updateValue(
                     static::NUMBER_OF_DAYS,
                     (int) (Tools::getValue(static::NUMBER_OF_DAYS))
@@ -187,8 +187,9 @@ class BlockNewProducts extends Module
     public function hookRightColumn()
     {
         if (!$this->isCached('blocknewproducts.tpl', $this->getCacheId())) {
-            if (!isset(BlockNewProducts::$cache_new_products))
+            if (!isset(BlockNewProducts::$cache_new_products)) {
                 BlockNewProducts::$cache_new_products = $this->getNewProducts();
+            }
 
             $this->smarty->assign([
                 'new_products' => BlockNewProducts::$cache_new_products,
@@ -237,11 +238,13 @@ class BlockNewProducts extends Module
      */
     public function hookdisplayHomeTab()
     {
-        if (!$this->isCached('tab.tpl', $this->getCacheId('blocknewproducts-tab')))
+        if (!$this->isCached('tab.tpl', $this->getCacheId('blocknewproducts-tab'))) {
             BlockNewProducts::$cache_new_products = $this->getNewProducts();
+        }
 
-        if (BlockNewProducts::$cache_new_products === false)
+        if (BlockNewProducts::$cache_new_products === false) {
             return false;
+        }
 
         return $this->display(__FILE__, 'tab.tpl', $this->getCacheId('blocknewproducts-tab'));
     }
@@ -278,8 +281,9 @@ class BlockNewProducts extends Module
 
     public function hookHeader($params)
     {
-        if (isset($this->context->controller->php_self) && $this->context->controller->php_self == 'index')
+        if (isset($this->context->controller->php_self) && $this->context->controller->php_self == 'index') {
             $this->context->controller->addCSS(_THEME_CSS_DIR_.'product_list.css');
+        }
 
         $this->context->controller->addCSS($this->_path.'blocknewproducts.css', 'all');
     }
