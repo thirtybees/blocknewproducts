@@ -105,6 +105,13 @@ class BlockNewProducts extends Module
     {
         $this->clearCache();
 
+        Configuration::deleteByName('NEW_PRODUCTS_NBR');
+        Configuration::deleteByName(static::NUMBER_OF_DAYS);
+        Configuration::deleteByName(static::ALWAYS_DISPLAY);
+        Configuration::deleteByName(static::NUMBER);
+        Configuration::deleteByName(static::CACHE_TTL);
+        Configuration::deleteByName(static::CACHE_TIMESTAMP);
+
         return parent::uninstall();
     }
 
