@@ -193,6 +193,7 @@ class BlockNewProducts extends Module
 
             $this->smarty->assign([
                 'new_products' => BlockNewProducts::$cache_new_products,
+                // Retrocompatibility with < 1.1.1.
                 'mediumSize'   => Image::getSize(ImageType::getFormatedName('medium')),
             ]);
         }
@@ -264,6 +265,7 @@ class BlockNewProducts extends Module
         ) {
             $this->smarty->assign([
                 'new_products' => BlockNewProducts::$cache_new_products,
+                // Retrocompatibility with < 1.1.1.
                 'mediumSize'   => Image::getSize(ImageType::getFormatedName('medium')),
             ]);
         }
