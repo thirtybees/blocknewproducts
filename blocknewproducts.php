@@ -40,7 +40,7 @@ class BlockNewProducts extends Module
     const ALWAYS_DISPLAY = 'PS_BLOCK_NEWPRODUCTS_DISPLAY';
 
     // @codingStandardsIgnoreStart
-    /** @var array $cache_new_products */
+    /** @var array | false $cache_new_products */
     protected static $cache_new_products;
     // @codingStandardsIgnoreEnd
 
@@ -72,6 +72,8 @@ class BlockNewProducts extends Module
 
     /**
      * @return bool
+     * @throws Adapter_Exception
+     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -151,22 +153,20 @@ class BlockNewProducts extends Module
     }
 
     /**
-     * @return array
+     * @return array | false
      * @throws PrestaShopException
      */
     protected function getNewProducts()
     {
-        if (!Configuration::get(static::NUMBER)) {
+        $productCount = (int)Configuration::get(static::NUMBER);
+
+        if (! $productCount) {
             return [];
         }
 
         $newProducts = false;
         if (Configuration::get(static::NUMBER_OF_DAYS)) {
-            $newProducts = Product::getNewProducts(
-                (int) $this->context->language->id,
-                0,
-                (int) Configuration::get(static::NUMBER)
-            );
+            $newProducts = Product::getNewProducts((int) $this->context->language->id, 0, $productCount);
         }
 
         if (!$newProducts && Configuration::get(static::ALWAYS_DISPLAY)) {
@@ -197,7 +197,7 @@ class BlockNewProducts extends Module
             ]);
         }
 
-        if (!BlockNewProducts::$cache_new_products) {
+        if (BlockNewProducts::$cache_new_products === false) {
             return false;
         }
 
@@ -208,6 +208,8 @@ class BlockNewProducts extends Module
      * @param string|null $name
      *
      * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function getCacheId($name = null)
     {
@@ -280,7 +282,7 @@ class BlockNewProducts extends Module
         );
     }
 
-    public function hookHeader($params)
+    public function hookHeader()
     {
         if (isset($this->context->controller->php_self) && $this->context->controller->php_self == 'index') {
             $this->context->controller->addCSS(_THEME_CSS_DIR_.'product_list.css');
@@ -306,7 +308,6 @@ class BlockNewProducts extends Module
 
     /**
      * @return void
-     * @throws PrestaShopException
      */
     public function clearCache()
     {
@@ -316,11 +317,13 @@ class BlockNewProducts extends Module
             'tab.tpl'                   => 'blocknewproducts-tab',
         ];
 
-        foreach ($caches as $template => $cacheId) {
-            Tools::clearCache(Context::getContext()->smarty, $this->getTemplatePath($template), $cacheId);
-        }
+        try {
+            foreach ($caches as $template => $cacheId) {
+                Tools::clearCache(Context::getContext()->smarty, $this->getTemplatePath($template), $cacheId);
+            }
 
-        Configuration::updateValue(static::CACHE_TIMESTAMP, time());
+            Configuration::updateValue(static::CACHE_TIMESTAMP, time());
+        } catch (Exception $ignored) {}
     }
 
     /**
