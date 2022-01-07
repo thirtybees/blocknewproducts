@@ -88,6 +88,7 @@ class BlockNewProducts extends Module
         $this->registerHook('addproduct');
         $this->registerHook('updateproduct');
         $this->registerHook('deleteproduct');
+        $this->registerHook('displayHome');
         $this->registerHook('displayHomeTab');
         $this->registerHook('displayHomeTabContent');
         Configuration::updateValue('NEW_PRODUCTS_NBR', 4);
@@ -260,18 +261,25 @@ class BlockNewProducts extends Module
      */
     public function hookdisplayHomeTabContent()
     {
+        return $this->hookDisplayHome();
+    }
+
+    public function hookdisplayHome()
+    {
         if (!$this->isCached(
             'blocknewproducts_home.tpl',
             $this->getCacheId('blocknewproducts-home'))
         ) {
+            self::$cache_new_products = $this->getNewProducts();
             $this->smarty->assign([
                 'new_products' => BlockNewProducts::$cache_new_products,
                 // Retrocompatibility with < 1.1.1.
-                'mediumSize'   => Image::getSize(ImageType::getFormatedName('medium')),
+                // 'mediumSize'   => Image::getSize(ImageType::getFormatedName('medium')),
+                    'homeSize'     => Image::getSize(ImageType::getFormatedName('home')),
             ]);
         }
 
-        if (BlockNewProducts::$cache_new_products === false) {
+        if (self::$cache_new_products === false) {
             return false;
         }
 
