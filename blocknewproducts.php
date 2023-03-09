@@ -72,8 +72,6 @@ class BlockNewProducts extends Module
 
     /**
      * @return bool
-     * @throws Adapter_Exception
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
@@ -118,7 +116,7 @@ class BlockNewProducts extends Module
 
     /**
      * @return string
-     * @throws Exception
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -178,7 +176,7 @@ class BlockNewProducts extends Module
 
     /**
      * @return bool|string
-     * @throws Exception
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -222,7 +220,7 @@ class BlockNewProducts extends Module
 
     /**
      * @return bool|string
-     * @throws Exception
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -234,7 +232,7 @@ class BlockNewProducts extends Module
 
     /**
      * @return bool|string
-     * @throws Exception
+     *
      * @throws PrestaShopException
      * @throws SmartyException
      */
@@ -253,7 +251,7 @@ class BlockNewProducts extends Module
 
     /**
      * @return bool|string
-     * @throws Exception
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -282,6 +280,9 @@ class BlockNewProducts extends Module
         );
     }
 
+    /**
+     * @return void
+     */
     public function hookHeader()
     {
         if (isset($this->context->controller->php_self) && $this->context->controller->php_self == 'index') {
@@ -291,16 +292,25 @@ class BlockNewProducts extends Module
         $this->context->controller->addCSS($this->_path.'blocknewproducts.css', 'all');
     }
 
+    /**
+     * @return void
+     */
     public function hookAddProduct()
     {
         $this->clearCache();
     }
 
+    /**
+     * @return void
+     */
     public function hookUpdateProduct()
     {
         $this->clearCache();
     }
 
+    /**
+     * @return void
+     */
     public function hookDeleteProduct()
     {
         $this->clearCache();
@@ -328,7 +338,7 @@ class BlockNewProducts extends Module
 
     /**
      * @return string
-     * @throws Exception
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
