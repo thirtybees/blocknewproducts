@@ -39,11 +39,6 @@ class BlockNewProducts extends Module
     const NUMBER_OF_DAYS = 'PS_NB_DAYS_NEW_PRODUCT';
     const ALWAYS_DISPLAY = 'PS_BLOCK_NEWPRODUCTS_DISPLAY';
 
-    // @codingStandardsIgnoreStart
-    /** @var array | false $cache_new_products */
-    protected static $cache_new_products;
-    // @codingStandardsIgnoreEnd
-
     /**
      * BlockNewProducts constructor.
      *
@@ -151,10 +146,25 @@ class BlockNewProducts extends Module
     }
 
     /**
-     * @return array | false
+     * @return array|false
      * @throws PrestaShopException
      */
     protected function getNewProducts()
+    {
+        static $newProducts = null;
+        if (is_null($newProducts)) {
+            $newProducts = static::fetchNewProducts();
+        }
+        return $newProducts;
+    }
+
+    /**
+     * @return array|false
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function fetchNewProducts()
     {
         $productCount = (int)Configuration::get(static::NUMBER);
 
@@ -175,7 +185,7 @@ class BlockNewProducts extends Module
     }
 
     /**
-     * @return bool|string
+     * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -184,19 +194,11 @@ class BlockNewProducts extends Module
     public function hookRightColumn()
     {
         if (!$this->isCached('blocknewproducts.tpl', $this->getCacheId())) {
-            if (!isset(BlockNewProducts::$cache_new_products)) {
-                BlockNewProducts::$cache_new_products = $this->getNewProducts();
-            }
-
             $this->smarty->assign([
-                'new_products' => BlockNewProducts::$cache_new_products,
+                'new_products' => $this->getNewProducts(),
                 // Retrocompatibility with < 1.1.1.
                 'mediumSize'   => Image::getSize(ImageType::getFormatedName('medium')),
             ]);
-        }
-
-        if (BlockNewProducts::$cache_new_products === false) {
-            return false;
         }
 
         return $this->display(__FILE__, 'blocknewproducts.tpl', $this->getCacheId());
@@ -219,7 +221,7 @@ class BlockNewProducts extends Module
     }
 
     /**
-     * @return bool|string
+     * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
@@ -231,53 +233,55 @@ class BlockNewProducts extends Module
     }
 
     /**
-     * @return bool|string
+     * @return string
      *
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function hookdisplayHomeTab()
+    public function hookDisplayHomeTab()
     {
-        if (!$this->isCached('tab.tpl', $this->getCacheId('blocknewproducts-tab'))) {
-            BlockNewProducts::$cache_new_products = $this->getNewProducts();
-        }
-
-        if (BlockNewProducts::$cache_new_products === false) {
-            return false;
+        if (! $this->isCached('tab.tpl', $this->getCacheId('blocknewproducts-tab'))) {
+            if ($this->getNewProducts() === false) {
+                return '';
+            }
         }
 
         return $this->display(__FILE__, 'tab.tpl', $this->getCacheId('blocknewproducts-tab'));
     }
 
     /**
-     * @return bool|string
+     * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
      */
-    public function hookdisplayHomeTabContent()
+    public function hookDisplayHomeTabContent()
     {
-        if (!$this->isCached(
-            'blocknewproducts_home.tpl',
-            $this->getCacheId('blocknewproducts-home'))
-        ) {
+        if (!$this->isCached('blocknewproducts_home.tpl', $this->getCacheId('blocknewproducts-home'))) {
+            $newProducts = $this->getNewProducts();
+            if ($newProducts === false) {
+                return '';
+            }
             $this->smarty->assign([
-                'new_products' => BlockNewProducts::$cache_new_products,
-                // Retrocompatibility with < 1.1.1.
+                'new_products' => $newProducts,
                 'mediumSize'   => Image::getSize(ImageType::getFormatedName('medium')),
             ]);
         }
 
-        if (BlockNewProducts::$cache_new_products === false) {
-            return false;
-        }
+        return $this->display(__FILE__, 'blocknewproducts_home.tpl', $this->getCacheId('blocknewproducts-home'));
+    }
 
-        return $this->display(
-            __FILE__,
-            'blocknewproducts_home.tpl',
-            $this->getCacheId('blocknewproducts-home')
-        );
+    /**
+     * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
+    public function hookDisplayHome()
+    {
+        return $this->hookDisplayHomeTabContent();
     }
 
     /**
@@ -411,9 +415,11 @@ class BlockNewProducts extends Module
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
             .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
+        /** @var AdminController $controller */
+        $controller = $this->context->controller;
         $helper->tpl_vars = [
             'fields_value' => $this->getConfigFieldsValues(),
-            'languages'    => $this->context->controller->getLanguages(),
+            'languages'    => $controller->getLanguages(),
             'id_language'  => $this->context->language->id,
         ];
 
