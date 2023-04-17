@@ -83,6 +83,7 @@ class BlockNewProducts extends Module
         $this->registerHook('deleteproduct');
         $this->registerHook('displayHomeTab');
         $this->registerHook('displayHomeTabContent');
+        $this->registerHook('actionGetBlockTopMenuLinks');
         Configuration::updateValue('NEW_PRODUCTS_NBR', 4);
 
         $this->clearCache();
@@ -450,5 +451,36 @@ class BlockNewProducts extends Module
                 (int) Configuration::get(static::CACHE_TTL) / 60
             ),
         ];
+    }
+
+    /**
+     * @return array[]
+     */
+    public function hookActionGetBlockTopMenuLinks()
+    {
+        return [
+            [
+                'id' => 'NEW_PRODUCTS',
+                'name' => $this->l('New products'),
+                'render' => [$this, 'renderBlockTopMenu']
+            ]
+        ];
+    }
+
+    /**
+     * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
+    public function renderBlockTopMenu()
+    {
+        if (!$this->isCached('block-top-menu.tpl', $this->getCacheId('block-top-menu'))) {
+            if (!$this->getNewProducts() && !Configuration::get(static::ALWAYS_DISPLAY)) {
+                return '';
+            }
+        }
+        return $this->display(__FILE__, 'block-top-menu.tpl', $this->getCacheId('block-top-menu'));
     }
 }
